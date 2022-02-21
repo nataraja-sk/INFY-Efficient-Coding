@@ -8,11 +8,11 @@ namespace consoleApps
     class CoinChangeProblem
     {
         private static int[] input = { 1, 3, 5, 6 };
-        private static int amount = 1;
+        private static int amount = int.MaxValue;
 
         static void Main(string[] args)
         {
-            Console.WriteLine(string.Join(Environment.NewLine, GetChanges()?.Select(x => $"Coin of {x.Key} - {x.Value}")));
+            Console.WriteLine(string.Join(Environment.NewLine, GetChanges()?.Select(x => $"Coin of {x.Key} * {x.Value} = {x.Key * x.Value}")));
         }
 
         static Dictionary<int, int> GetChanges()
@@ -20,17 +20,20 @@ namespace consoleApps
             input = input.OrderByDescending(x => x).ToArray();
 
             Dictionary<int, int> result = new Dictionary<int, int>();
-            Func<KeyValuePair<int, int>, int> total = x => x.Key * x.Value;
             var index = 0;
-            while (result.Sum(total) < amount)
+            while (amount > 0)
             {
-                if ((input[index] + result.Sum(total)) <= amount)
+                if (amount - input[index] >= 0)
                 {
                     if (!result.ContainsKey(input[index]))
+                    {
                         result.Add(input[index], 1);
-                    while ((input[index] + result.Sum(total)) <= amount)
+                        amount -= input[index];
+                    }
+                    while (amount - input[index] >= 0)
                     {
                         result[input[index]] = result[input[index]] + 1;
+                        amount -= input[index];
                     }
                 }
                 if (++index == input.Length)
